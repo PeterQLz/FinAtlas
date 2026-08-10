@@ -47,7 +47,7 @@ print(df_bench.head())
 from datasets import load_dataset
 
 # Option 2: Hugging Face datasets
-ds_bench = load_dataset("parquet", data_files="FinAtlas_Bench.parquet", split="train")
+ds_bench = Dataset.from_parquet("FinAtlas_Bench.parquet")
 print(ds_bench.head())
 
 ```

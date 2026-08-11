@@ -4,9 +4,7 @@
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](#)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](#)
 
-FinAtlas is a comprehensive system designed for complex financial sentiment understanding, extending traditional polarity classification into multi-dimensional semantic parsing. 
-
-This repository provides the instruction-tuning and benchmark datasets reconstructed from a massive-scale raw candidate corpus of approximately 80 million financial texts.
+FinAtlas is a comprehensive system designed for complex financial sentiment understanding, extending traditional polarity classification into multi-dimensional semantic parsing. This repository provides the instruction-tuning and benchmark datasets reconstructed from a massive-scale raw candidate corpus of approximately 80 million financial texts.
 
 ## 📌 System Components
 
@@ -47,7 +45,7 @@ print(df_bench.head())
 from datasets import load_dataset
 
 # Option 2: Hugging Face datasets
-ds_bench = Dataset.from_parquet("FinAtlas_Bench.parquet")
+ds_bench = load_dataset("parquet", data_files="FinAtlas_Bench.parquet", split="train")
 print(ds_bench.head())
 
 ```
@@ -225,6 +223,7 @@ This repository is data-focused and contains the following files:
 | `FinAtlas_Casuality_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Causal Relationship dimension. |
 | `FinAtlas_Entity_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Entity Relationship dimension. |
 | `FinAtlas_Wording_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Wording Difference dimension. |
+| `FinAtlas_Experiment_settings.md` | Experiments setting  detail. |
 | `README.md` | Dataset documentation, schema, and a sample record. |
 
 ---

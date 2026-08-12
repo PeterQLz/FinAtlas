@@ -10,7 +10,7 @@ FinAtlas is a comprehensive system designed for complex financial sentiment unde
 
 FinAtlas system is constructed by Di Han, Liangzhou Qu, Junjie Mao, Yulin He<sup>*</sup>, Qixian Li, and Canwei Dai.
 
-*(<sup>*</sup>represents corresponding author)*
+<sup>*</sup>represents corresponding author
 
 ## 📌 System Components
 

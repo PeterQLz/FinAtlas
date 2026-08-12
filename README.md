@@ -6,6 +6,10 @@
 
 FinAtlas is a comprehensive system designed for complex financial sentiment understanding, extending traditional polarity classification into multi-dimensional semantic parsing. This repository provides the instruction-tuning and benchmark datasets reconstructed from a massive-scale raw candidate corpus of approximately 80 million financial texts.
 
+## 📌 Author
+
+FinAtlas system is constructed by Di Han, Liangzhou Qu, Junjie Mao, Yulin He<sup>*</sup>, Qixian Li, and Canwei Dai.
+
 ## 📌 System Components
 
 The FinAtlas system integrates three core components:

@@ -8,9 +8,16 @@ FinAtlas is a comprehensive system designed for complex financial sentiment unde
 
 ## 📌 Author
 
-FinAtlas system is constructed by Di Han (dihan@gduf.edu.cn), Liangzhou Qu (liangzhqu2-c@my.cityu.edu.hk), Junjie Mao (junjie.mao@audencia.com), Yulin He<sup>*</sup> (yulinhe@gml.ac.cn), Qixian Li (3260000547@student.must.edu.mo), and Canwei Dai (18318717968@163.com).
+**FinAtlas** is constructed by:
 
-<sup>*</sup>represents corresponding author
+- **Di Han** — dihan@gduf.edu.cn
+- **Liangzhou Qu** — liangzhqu2-c@my.cityu.edu.hk
+- **Junjie Mao** — junjie.mao@audencia.com
+- **Yulin He<sup>*</sup>** — yulinhe@gml.ac.cn
+- **Qixian Li** — 3260000547@student.must.edu.mo
+- **Canwei Dai** — 18318717968@163.com
+
+<sup>*</sup> Corresponding author
 
 ## 📌 System Components
 

@@ -234,7 +234,7 @@ The following JSON object is a real FinAtlas-Bench sample reproduced from Append
 - All 2,000 records have valid `Timestamp` values; no missing or blank timestamps were found.
 - Yearly sample counts map:
 
-![FinAtlas-Bench yearly sample counts](FinAtlas-Bench-EDA/yearly_sample_counts.png)
+![FinAtlas-Bench yearly sample counts](yearly_sample_counts.png)
 
 #### 2. Crisis-Window Coverage of S&P 500 Stress Episodes
 
@@ -272,7 +272,7 @@ Note: the actual `Type` value in the parquet is `TWEETS` (plural), while the Dat
 
 To show the monthly sample-volume perspective, the faceted line chart below retains zero months and gives each source its own panel, so the much larger `NEWS` peaks do not compress `TWEETS` and `REPORT`.
 
-![Monthly sample count by source](FinAtlas-Bench-EDA/source_monthly_counts_lines.png)
+![Monthly sample count by source](source_monthly_counts_lines.png)
 
 #### 4. Dimension Label Coverage and Distribution
 

@@ -226,8 +226,6 @@ The following JSON object is a real FinAtlas-Bench sample reproduced from Append
 
 ### FinAtlas-Bench EDA
 
-**Data source:** `FinAtlas_Bench_Final_2018_2024_replaced.parquet` (2,000 samples). This EDA only covers the 2018-2024 sample range of the benchmark.
-
 #### 1. Time Span and Yearly Distribution
 
 - Time span: `2018-01-01` to `2024-09-01`.

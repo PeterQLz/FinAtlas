@@ -301,12 +301,14 @@ The coverage table below counts a list field as valid when it contains at least 
 | `BEARISH` | 732 | 36.60% |
 | `BULLISH` | 112 | 5.60% |
 
-**Macro context and risk exposure**
+**Macro context**
 
 | `Macro_Market_Regime` | Count | Share |
 | --- | ---: | ---: |
 | `BULL` | 1,240 | 62.00% |
 | `BEAR` | 760 | 38.00% |
+
+**Risk exposure**
 
 | `Risk_Level` | Count | Share |
 | --- | ---: | ---: |
@@ -363,7 +365,7 @@ Relation-type distribution is based on all extracted relations (1,053 in total):
 | `EXECUTIVE_CHANGE` | 72 | 6.84% |
 | `LEGAL_DISPUTE` | 67 | 6.36% |
 
-**Wording dimension**
+**Wording difference**
 
 | `Wording_Rhetoric_Type` | Count | Share |
 | --- | ---: | ---: |

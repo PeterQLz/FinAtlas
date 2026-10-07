@@ -417,7 +417,10 @@ The FinAtlas datasets are derived and reconstructed from the following open-sour
 | **financial-tweets** | StephanAkkerman | https://huggingface.co/datasets/StephanAkkerman/financial-tweets |
 | **stock_market_tweets** | mjw | https://huggingface.co/datasets/mjw/stock_market_tweets |
 | **StockTwits** | StockTwits | https://www.mdpi.com/2571-5577/4/1/13 |
-
+| **SP500-Financial-News-Articles-Time-Series** | KrossKinetic | https://huggingface.co/datasets/KrossKinetic/SP500-Financial-News-Articles-Time-Series |
+| **Bloomberg_Financial_News** | danidanou | https://huggingface.co/datasets/danidanou/Bloomberg_Financial_News |
+| **Financial Tweets** | Financial Tweets | https://www.kaggle.com/datasets/davidwallach/financial-tweets |
+| **S&P 500 with Financial News Headlines** | S&P 500 with Financial News Headlines | https://www.kaggle.com/datasets/dyutidasmahaptra/s-and-p-500-with-financial-news-headlines-20082024 |
 ---
 
 ## 📖 Citation

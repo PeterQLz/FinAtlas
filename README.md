@@ -385,11 +385,9 @@ The panic/rumor signal combined by `EMOTIONAL_HYPERBOLE` + `AMBIGUOUS_RUMOR` cov
 
 
 
+## Training Pipeline
 
-
-## 🛠️ Causal Relationship Training Pipeline
-
-The repository includes four scripts for the **Causal Relationship** dimension, covering English financial **News**, **Tweets**, and **Reports**. They connect three-model consensus annotation, structured chain-of-thought (CoT) generation, supervised fine-tuning (SFT), and Group Relative Policy Optimization (GRPO).
+The training pipeline is illustrated using the **Causal Relationship** dimension as an example, covering English financial **News**, **Tweets**, and **Reports**. The four scripts connect three-model consensus annotation, structured chain-of-thought (CoT) generation, supervised fine-tuning (SFT), and Group Relative Policy Optimization (GRPO).
 
 ### Stages and Files
 

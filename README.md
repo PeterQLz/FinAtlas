@@ -460,11 +460,11 @@ This repository contains the datasets, documentation, and causal relationship tr
 | `FinAtlas_Entity_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Entity Relationship dimension. |
 | `FinAtlas_Wording_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Wording Difference dimension. |
 | `FinAtlas_Experiment_settings.md` | Experiments setting  detail. |
-| [three_model_consensus.py](three_model_consensus.py) | Three-model causal annotation and allocation of SFT/GRPO samples. |
-| [cot_process.py](cot_process.py) | CoT generation and conversion to `prompt` / `response` SFT pairs. |
-| [sft_train.py](sft_train.py) | LoRA SFT using the News, Tweets, and Reports CoT datasets. |
-| [grpo_train.py](grpo_train.py) | GRPO training initialized from the trained causality SFT adapter. |
-| [requirements.txt](requirements.txt) | Python dependencies and version constraints for dataset loading and the complete training pipeline. |
+| `three_model_consensus.py` | Three-model causal annotation and allocation of SFT/GRPO samples. |
+| `cot_process.py` | CoT generation and conversion to `prompt` / `response` SFT pairs. |
+| `sft_train.py` | LoRA SFT using the News, Tweets, and Reports CoT datasets. |
+| `grpo_train.py` | GRPO training initialized from the trained causality SFT adapter. |
+| `requirements.txt` | Python dependencies and version constraints for dataset loading and the complete training pipeline. |
 | `README.md` | Dataset documentation, schema, a sample record, and the four-stage training workflow. |
 
 ---

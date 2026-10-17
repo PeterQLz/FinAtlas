@@ -1,0 +1,26 @@
+# FinAtlas: dataset loading, consensus annotation, CoT generation, SFT, and GRPO.
+# Python 3.10+; use a separate virtual environment for this repository.
+# These are dependency constraints, not a lockfile of the original experiments.
+
+# Dataset loading and Parquet I/O.
+pandas>=2.2,<3
+pyarrow>=15
+datasets>=3.0,<5
+
+# OpenAI-compatible annotation APIs and progress reporting.
+openai>=1.30,<3
+tqdm>=4.66,<5
+
+# Install a CUDA-enabled PyTorch build suited to the training machine first:
+# https://pytorch.org/get-started/locally/
+torch>=2.6,<3
+
+# Transformers 5.2 includes the default Qwen3.5 model architecture.
+# Keep the training libraries within these bounds when using the current scripts.
+transformers>=5.2,<5.3
+peft>=0.18,<0.19
+accelerate>=1.4,<2
+
+# This GRPOTrainer version copies the existing SFT adapter into a reference adapter.
+# https://github.com/huggingface/trl/blob/v0.29.1/trl/trainer/grpo_trainer.py
+trl==0.29.1

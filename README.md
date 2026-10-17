@@ -92,7 +92,7 @@ The following JSON object is a real FinAtlas-Bench sample reproduced from Append
 
 ```json
 {
-  "Text": "Wall Street Closes Lower for a 4th Day | United States Stock Market | US stocks closed lower for a fourth straight session Monday, as concerns over a recession in the US mounted after the Fed took a more hawkish tone than expected. Chair Powell said last week the central bank would continue its monetary policy tightening campaign, despite the ongoing recession risks and expectations that inflation is peaking. Among single stocks, Meta Platforms dropped 4.1% after the European Commission said it could impose a fine of up to 10% of its annual global turnover if evidence showed an infringement of the EU's antitrust laws, while L3 Harris Technologies fell 3.7% after saying it would buy Aerojet Rocketdyne Holdings for $4.7 billion. On the economic data front, US homebuilder sentiment fell for a 12th month as high mortgage rates weighed on affordability. The Dow Jones fell 163 points, or 0.5%, to 32,758, the S&P 500 lost 0.9% to 3,818, and the Nasdaq Composite shed 1.5% to 10,546. Stocks are on track to end December lower after two consecutive weeks in the red.",
+  "Text": "Wall Street Closes Lower for a 4th Day Wall Street Closes Lower for a 4th DayUnited States Stock MarketUS stocks closed lower for a fourth straight session Monday, as concerns over a recession in the US mounted after the Fed took a more hawkish tone than expected. Chair Powell said last week the central bank would continue its monetary policy tightening campaign, despite the ongoing recession risks and expectations that inflation is peaking. Among single stocks, Meta Platforms dropped 4.1% after the European Commission said it could impose a fine of up to 10% of its annual global turnover if evidence showed an infringement of the EU's antitrust laws, while L3 Harris Technologies fell 3.7% after saying it would buy Aerojet Rocketdyne Holdings for $4.7 billion. On the economic data front, US homebuilder sentiment fell for a 12th month as high mortgage rates weighed on affordability. The Dow Jones fell 163 points, or 0.5%, to 32,758, the S&P 500 lost 0.9% to 3,818, and the Nasdaq Composite shed 1.5% to 10,546. Stocks are on track to end December lower after two consecutive weeks in the red.2022-12-19T21:12:56.66",
   "Fundamental_Labels": {
     "Timestamp": "2022/12/19",
     "Type": "NEWS",
@@ -387,9 +387,78 @@ The panic/rumor signal combined by `EMOTIONAL_HYPERBOLE` + `AMBIGUOUS_RUMOR` cov
 
 
 
+## 🛠️ Causal Relationship Training Pipeline
+
+The repository includes four scripts for the **Causal Relationship** dimension, covering English financial **News**, **Tweets**, and **Reports**. They connect three-model consensus annotation, structured chain-of-thought (CoT) generation, supervised fine-tuning (SFT), and Group Relative Policy Optimization (GRPO).
+
+### Stages and Files
+
+Keep the four scripts in the same directory. Default paths are relative to that directory. In the table below, `<TYPE>` is exactly `News`, `Tweets`, or `Reports`.
+
+| Stage / Script | Input | Output / Behavior |
+| --- | --- | --- |
+| 1. [three_model_consensus.py](three_model_consensus.py) | `.parquet` files directly inside `data/<type>/`, where `<type>` is lowercase; each file needs a `Text` or `text` column. | Three models vote on `Chain_Complexity`. Unanimous 3:0 samples enter `causality/<TYPE>_Causality_allocate.parquet` while the matching SFT category has room. Valid 2:1 samples and unanimous samples whose SFT category is full enter `causality/FinAtlas_<TYPE>_Causality_GRPO.parquet`. |
+| 2. [cot_process.py](cot_process.py) | `causality/<TYPE>_Causality_allocate.parquet` | Generates a rationale for the supplied annotation and saves `causality/FinAtlas_Causality_SFT_<TYPE>.parquet`, containing exactly two string columns: `prompt` and `response`. |
+| 3. [sft_train.py](sft_train.py) | The three CoT files: `FinAtlas_Causality_SFT_News.parquet`, `FinAtlas_Causality_SFT_Tweets.parquet`, and `FinAtlas_Causality_SFT_Reports.parquet`, under `causality/`. | Combines their `prompt` / `response` pairs and trains a LoRA adapter. Loss is computed on the response tokens. The final adapter, tokenizer, and training metadata are saved to `outputs/Causality_LoRA/final/`. |
+| 4. [grpo_train.py](grpo_train.py) | The three `FinAtlas_<TYPE>_Causality_GRPO.parquet` files and the trained SFT adapter. | Continues training the SFT adapter using format and causality rewards. The final adapter and tokenizer are saved to `outputs/Causality_GRPO/final/`. |
+
+Consensus concerns the **complexity label**; extracted paths come from a model supporting the winning label. Allocation files contain `text`, `Chain_Complexity`, `Causal_Paths`, `Votes`, and `Consensus_Level`. GRPO files additionally retain `GRPO_Reason` and `Model_Outputs`. The CoT response preserves the supplied causal annotation in `<output>` JSON following a `<thinking>` rationale. GRPO reads the stage-1 corpus directly and constructs prompts using the shared CoT prompt builder; target labels and paths are supplied separately to the reward functions.
+
+The scripts share the following causal rules:
+
+- `SINGLE`: One or more independent direct causal relationships. Branches such as A → B and A → C remain separate `SINGLE` paths.
+- `MULTIPLE`: A strictly sequential causal chain with at least two explicitly stated intermediate mechanisms, encoded as at least two connected cause–mechanism–effect triads. Each triad's `Effect` must match the next triad's `Cause`.
+- `NONE`: No substantive causal business impact; `Causal_Paths` is empty.
+
+### Configuration and Defaults
+
+Editable settings, with comments, are grouped near the top of each script.
+
+| Script | Settings to Review | Current Defaults |
+| --- | --- | --- |
+| `three_model_consensus.py` | `TEXT_TYPE`, `INPUT_DIR`, `OUTPUT_DIR`, provider API keys, `*_MODEL`, `*_BASE_URL`, `CAPS`, `GRPO_CAP`, `CONCURRENCY_LIMIT` | `News`; `deepseek-chat`, `qwen-plus`, `glm-4-flash`; SFT category caps: `SINGLE=500`, `MULTIPLE=300`, `NONE=200`; GRPO collection capacity: 8,000 per text type; 16 concurrent texts. |
+| `cot_process.py` | `TEXT_TYPE`, `INPUT_PARQUET`, `OUTPUT_PARQUET`, `API_KEY`, `MODEL_NAME`, `BASE_URL`, `CONCURRENCY_LIMIT` | Inherits the text type, output directory, and DeepSeek API settings from stage 1; 16 concurrent generation requests. These settings can be overridden in the file. |
+| `sft_train.py` | `MODEL_PATH`, `MODEL_CLASS`, `DATA_PATHS`, `OUTPUT_DIR`, epochs, learning rate, batch size, gradient accumulation, sequence length, LoRA settings | Local `models/Qwen3.5-9B` checkpoint; 10 epochs; learning rate `2e-5`; batch size 2; gradient accumulation 8; sequence limit 8,192 tokens. |
+| `grpo_train.py` | `SFT_LORA_PATH`, `DATA_CONFIG`, `OUTPUT_DIR`, epochs, learning rate, batch size, gradient accumulation, `GROUP_SIZE`, generation limits, reward weights | Continues `outputs/Causality_LoRA/final/`; up to 1,000 eligible samples each from News, Tweets, and Reports; 1 epoch; learning rate `5e-6`; batch size 1; gradient accumulation 4; 4 completions per prompt. |
+
+Adjust dataset sizes as needed: stage-1 `CAPS` and `GRPO_CAP` control collection, while stage-4 `DATA_CONFIG` controls training sampling after validity and length filtering. If a source has fewer eligible rows than its training cap, all available rows are used; set its cap to `None` to use all eligible rows. The default seed is 42.
+
+To change an annotation model, edit its model ID; changing providers also requires the corresponding API base URL and key. Stages 1 and 2 use OpenAI-compatible chat endpoints. Enter API keys locally or through the supported environment variables, and retain placeholders in published code. Stage-1 concurrency counts texts, with three voting requests per text; stage-2 concurrency counts individual generation requests.
+
+Training settings reflect experiments on a single **NVIDIA A800 80 GB**. Adjust batch size and gradient accumulation to suit your hardware. For SFT, the default effective batch size on one GPU is `2 × 8 = 16`. For GRPO, the global completion batch must be divisible by `GROUP_SIZE`. GRPO inherits the base-model and chat settings from SFT, and its LoRA configuration comes from the trained SFT adapter. Both final outputs are adapters used with the configured base model.
+
+### Running the Pipeline
+
+Use Python 3.10+ in a separate virtual environment. For GPU training, first install a CUDA-enabled PyTorch build matching your machine using the [official PyTorch installation guide](https://pytorch.org/get-started/locally/), within the version bounds in [requirements.txt](requirements.txt). Then install the repository dependencies from its root directory:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip check
+```
+
+`requirements.txt` covers dataset loading and all four scripts. It constrains the training libraries for the current code, including [Qwen3.5 support in Transformers 5.2](https://github.com/huggingface/transformers/tree/v5.2.0/src/transformers/models/qwen3_5) and [TRL 0.29.1's SFT reference-adapter snapshot](https://github.com/huggingface/trl/blob/v0.29.1/trl/trainer/grpo_trainer.py). With the default positive KL coefficient, GRPO checks that its frozen reference adapter matches the initial SFT adapter. These constraints are not an exact lockfile of the paper's experimental environment; a complete GPU training run has not been validated against this dependency file.
+
+1. Place raw Parquet files in `data/news/`, `data/tweets/`, and `data/reports/`, or change `INPUT_DIR`. Configure API credentials and model settings.
+2. Set `TEXT_TYPE = "News"` in `three_model_consensus.py`, then run the following commands from the repository directory:
+
+   ```bash
+   python three_model_consensus.py
+   python cot_process.py
+   ```
+
+3. Change `TEXT_TYPE` to `"Tweets"` and repeat both commands, then do the same for `"Reports"`. CoT inherits this selection unless explicitly overridden. The first two stages process **one text type per run**; prepare all three sources before combined training.
+4. Configure the local base-model path and SFT settings, then run:
+
+   ```bash
+   python sft_train.py
+   python grpo_train.py
+   ```
+
+Stage 1 uses type-specific resume logs. Use a fresh output directory when changing the corpus, annotation models, prompts, or collection quotas. CoT regenerates and replaces its output file. GRPO defaults to resuming the latest checkpoint in its output directory; set `RESUME_FROM_CHECKPOINT = None` for a fresh run. Review generated annotations and rationales before training: the structural checks do not establish that every causal claim is supported by the source text.
+
 ## 🗂️ Repository Structure
 
-This repository is data-focused and contains the following files:
+This repository contains the datasets, documentation, and causal relationship training scripts:
 
 | File | Description |
 | --- | --- |
@@ -400,7 +469,12 @@ This repository is data-focused and contains the following files:
 | `FinAtlas_Entity_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Entity Relationship dimension. |
 | `FinAtlas_Wording_SFT.parquet` | FinAtlas-SFT instruction-tuning samples for the Wording Difference dimension. |
 | `FinAtlas_Experiment_settings.md` | Experiments setting  detail. |
-| `README.md` | Dataset documentation, schema, and a sample record. |
+| [three_model_consensus.py](three_model_consensus.py) | Three-model causal annotation and allocation of SFT/GRPO samples. |
+| [cot_process.py](cot_process.py) | CoT generation and conversion to `prompt` / `response` SFT pairs. |
+| [sft_train.py](sft_train.py) | LoRA SFT using the News, Tweets, and Reports CoT datasets. |
+| [grpo_train.py](grpo_train.py) | GRPO training initialized from the trained causality SFT adapter. |
+| [requirements.txt](requirements.txt) | Python dependencies and version constraints for dataset loading and the complete training pipeline. |
+| `README.md` | Dataset documentation, schema, a sample record, and the four-stage training workflow. |
 
 ---
 

@@ -400,13 +400,6 @@ Keep the four scripts in the same directory. Default paths are relative to that 
 | 3. [sft_train.py](sft_train.py) | The three CoT files: `FinAtlas_Causality_SFT_News.parquet`, `FinAtlas_Causality_SFT_Tweets.parquet`, and `FinAtlas_Causality_SFT_Reports.parquet`, under `causality/`. | Combines their `prompt` / `response` pairs and trains a LoRA adapter. Loss is computed on the response tokens. The final adapter, tokenizer, and training metadata are saved to `outputs/Causality_LoRA/final/`. |
 | 4. [grpo_train.py](grpo_train.py) | The three GRPO files: `FinAtlas_News_Causality_GRPO.parquet`, `FinAtlas_Tweets_Causality_GRPO.parquet`, and `FinAtlas_Reports_Causality_GRPO.parquet`, under `causality/`, plus the SFT adapter in `outputs/Causality_LoRA/final/`. | By default, samples up to 1,000 eligible rows per text type, combines all three sources into one dataset of up to 3,000 rows, and shuffles it with seed 42. Jointly trains the SFT adapter on this combined dataset using GRPO format and causality rewards. Saves the final adapter and tokenizer to `outputs/Causality_GRPO/final/`. |
 
-Consensus concerns the **complexity label**; extracted paths come from a model supporting the winning label. Allocation files contain `text`, `Chain_Complexity`, `Causal_Paths`, `Votes`, and `Consensus_Level`. GRPO files additionally retain `GRPO_Reason` and `Model_Outputs`. The CoT response preserves the supplied causal annotation in `<output>` JSON following a `<thinking>` rationale. GRPO reads the stage-1 corpus directly and constructs prompts using the shared CoT prompt builder; target labels and paths are supplied separately to the reward functions.
-
-The scripts share the following causal rules:
-
-- `SINGLE`: One or more independent direct causal relationships. Branches such as A → B and A → C remain separate `SINGLE` paths.
-- `MULTIPLE`: A strictly sequential causal chain with at least two explicitly stated intermediate mechanisms, encoded as at least two connected cause–mechanism–effect triads. Each triad's `Effect` must match the next triad's `Cause`.
-- `NONE`: No substantive causal business impact; `Causal_Paths` is empty.
 
 ### Configuration and Defaults
 
